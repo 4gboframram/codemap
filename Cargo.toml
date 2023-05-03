@@ -16,3 +16,6 @@ keywords = ["source", "position", "compiler", "sourcemap", "rustc"]
 
 [badges]
 travis-ci = { repository = "kevinmehall/codemap" }
+
+[dependencies]
+memchr = "2.5.0"

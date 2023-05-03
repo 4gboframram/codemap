@@ -28,9 +28,13 @@ use std::hash::{Hash, Hasher};
 use std::ops::{Add, Deref, Sub};
 use std::sync::Arc;
 
+extern crate memchr;
+use memchr::memchr_iter;
+
 /// A small, `Copy`, value representing a position in a `CodeMap`'s file.
-#[derive(Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
-pub struct Pos(u32);
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug, Default)]
+#[repr(transparent)]
+pub struct Pos(pub u32);
 
 impl Add<u64> for Pos {
     type Output = Pos;
@@ -113,7 +117,7 @@ impl<T> Spanned<T> {
     pub fn map_node<U, F: FnOnce(T) -> U>(self, op: F) -> Spanned<U> {
         Spanned {
             node: op(self.node),
-            span: self.span
+            span: self.span,
         }
     }
 }
@@ -129,6 +133,7 @@ impl<T> Deref for Spanned<T> {
 /// A data structure recording source code files for position lookup.
 #[derive(Default, Debug)]
 pub struct CodeMap {
+    end_pos: Pos,
     files: Vec<Arc<File>>,
 }
 
@@ -143,14 +148,14 @@ impl CodeMap {
     /// Use the returned `File` and its `.span` property to create `Spans`
     /// representing substrings of the file.
     pub fn add_file(&mut self, name: String, source: String) -> Arc<File> {
-        let low = self.end_pos() + 1;
+        let low = self.end_pos + 1;
+
         let high = low + source.len() as u64;
+        self.end_pos = high;
         let mut lines = vec![low];
-        lines.extend(
-            source
-                .match_indices('\n')
-                .map(|(p, _)| low + (p + 1) as u64),
-        );
+
+        let iter = memchr_iter(b'\n', source.as_bytes()).map(|i| low + (i + 1) as u64);
+        lines.extend(iter);
 
         let file = Arc::new(File {
             span: Span { low, high },
@@ -158,13 +163,9 @@ impl CodeMap {
             source,
             lines,
         });
-
+        
         self.files.push(file.clone());
         file
-    }
-
-    fn end_pos(&self) -> Pos {
-        self.files.last().map(|x| x.span.high).unwrap_or(Pos(0))
     }
 
     /// Looks up the `File` that contains the specified position.
