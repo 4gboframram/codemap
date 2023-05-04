@@ -1,7 +1,6 @@
 [package]
 name = "codemap2-diagnostic"
 version = "0.1.0"
-authors = ["4gboframram", "The Rust Project Developers"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/4gboframram/codemap"
 documentation = "https://docs.rs/codemap2-diagnostic"
