@@ -33,10 +33,10 @@
 //! ```
 
 extern crate termcolor;
-extern crate codemap2;
+pub extern crate codemap2;
 extern crate atty;
 
-use codemap2::Span;
+pub use codemap2::*;
 
 mod lock;
 mod snippet;
