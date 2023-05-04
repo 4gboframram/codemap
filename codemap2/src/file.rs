@@ -4,8 +4,8 @@ use std::ops::Deref;
 
 /// A trait that represents file data
 pub trait FileData {
-    type Source: ?Sized + AsRef<str>;
-    type Name: ?Sized + std::fmt::Display + std::fmt::Debug;
+    type Source: ?Sized + AsRef<str> + PartialEq;
+    type Name: ?Sized + fmt::Display + fmt::Debug + PartialEq;
 
     /// The full source text
     fn source(&self) -> &Self::Source;
@@ -229,9 +229,24 @@ impl<T: FileData> fmt::Display for SpanLoc<T> {
     }
 }
 
-//
+/// A wrapper around a `Box<str>` that meets the requirements for `FileData::Source` and `FileData::Name`.
+/// This type is used in `DefaultFileData` because   
 #[derive(Debug)]
-struct BoxStr(Box<str>);
+#[repr(transparent)]
+pub struct BoxStr(Box<str>);
+impl BoxStr {
+    pub const fn new(s: Box<str>) -> Self {
+        Self(s)
+    }
+    /// A minimal-cost creation of `BoxStr` from a `String`
+    pub fn from_string(s: String) -> Self {
+        Self::new(s.into_boxed_str())
+    }
+    
+    pub fn into_inner(self) -> Box<str> {
+        self.0
+    }
+}
 impl Deref for BoxStr {
     type Target = str;
     fn deref(&self) -> &str {
@@ -246,6 +261,23 @@ impl fmt::Display for BoxStr {
 impl AsRef<str> for BoxStr {
     fn as_ref(&self) -> &str {
         self
+    }
+}
+
+impl PartialEq for BoxStr {
+    fn eq(&self, other: &Self) -> bool {
+        // pointer comparison of the boxes
+        let self_ptr: *const _ = &*(self.0);
+        let other_ptr: *const _ = &*(other.0);
+        std::ptr::eq(self_ptr, other_ptr)
+    }
+}
+
+impl Eq for BoxStr {}
+
+impl PartialEq<str> for BoxStr {
+    fn eq(&self, other: &str) -> bool {
+        &*self.0 == other
     }
 }
 
@@ -266,8 +298,8 @@ impl DefaultFileData {
 }
 
 impl FileData for DefaultFileData {
-    type Source = str;
-    type Name = str;
+    type Source = BoxStr;
+    type Name = BoxStr;
 
     fn source(&self) -> &Self::Source {
         &self.contents

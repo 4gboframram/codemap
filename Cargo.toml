@@ -1,2 +1,2 @@
 [workspace]
-members = ["codemap2"]
+members = ["codemap2", "codemap2-diagnostic"]
