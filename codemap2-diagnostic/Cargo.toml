@@ -18,5 +18,3 @@ categories = ["command-line-interface"]
 codemap2 = { path = "../codemap2" }
 atty = "0.2.11"
 termcolor = "1.0.4"
-
-[dev-dependencies]
