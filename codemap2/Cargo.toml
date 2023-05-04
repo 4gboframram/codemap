@@ -1,0 +1,20 @@
+[package]
+name = "codemap2"
+version = "0.1.0"
+authors = ["4gboframram"]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/4gboframram/codemap"
+documentation = "https://docs.rs/codemap2"
+description = """
+A maintained fork of the codemap crate that contains
+a data structure for efficiently storing source code position and span information
+(e.g. in a compiler AST), and mapping it back to file/line/column locations for error
+reporting and suggestions.
+"""
+readme = "README.md"
+categories = ["data-structures"]
+keywords = ["source", "position", "compiler", "sourcemap", "rustc"]
+
+
+[dependencies]
+memchr = "2.5.0"

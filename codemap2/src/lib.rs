@@ -1,5 +1,5 @@
 //! A data structure for tracking source positions in language implementations, inspired by the
-//! [CodeMap type in rustc's libsyntax](https://github.com/rust-lang/rust/blob/master/src/libsyntax/codemap.rs).
+//! [CodeMap type in rustc's libsyntax](https://github.com/rust-lang/rust/blob/master/src/libsyntax/codemap.rs) (dead link).
 //!
 //! The `CodeMap` tracks all source files and maps positions within them to linear indexes as if all
 //! source files were concatenated. This allows a source position to be represented by a small
@@ -9,7 +9,7 @@
 //!
 //! # Example
 //! ```
-//! use codemap::{CodeMap, FileData, DefaultFileData};
+//! use codemap2::{CodeMap, FileData, DefaultFileData};
 //! let mut codemap = CodeMap::new();
 //! let file = codemap.add_file(DefaultFileData::new("test.rs".to_string(), "fn test(){\n    println!(\"Hello\");\n}\n".to_string()));
 //! let string_literal_span = file.span.subspan(24, 31);
