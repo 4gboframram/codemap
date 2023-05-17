@@ -30,6 +30,19 @@ pub struct Span {
     pub(crate) high: Pos,
 }
 
+// compatibility with other libraries that expect `Span`s to be constructed from a `Range`
+impl From<std::ops::Range<Pos>> for Span {
+    fn from(r: std::ops::Range<Pos>) -> Self {
+        Self { low: r.start, high: r.end }
+    }
+}
+
+impl From<Span> for std::ops::Range<usize> {
+    fn from(s: Span) -> Self {
+        s.low.0 as usize..s.high.0 as usize
+    }
+}
+
 impl Span {
     /// Makes a span from offsets relative to the start of this span.
     ///
